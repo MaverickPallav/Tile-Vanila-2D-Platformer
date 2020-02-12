@@ -14,12 +14,12 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Ground
+  - Climbing
+  - Walls
+  - Player
+  - Enemy
+  - Background
   - 
   - 
   - 
@@ -40,4 +40,22 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: BackGround
+    uniqueID: 4222094741
+    locked: 0
+  - name: Ladder
+    uniqueID: 3064982105
+    locked: 0
+  - name: Walls
+    uniqueID: 3278594893
+    locked: 0
+  - name: Ground
+    uniqueID: 823662007
+    locked: 0
+  - name: Player
+    uniqueID: 4051977171
+    locked: 0
+  - name: Enemy
+    uniqueID: 316805641
     locked: 0
