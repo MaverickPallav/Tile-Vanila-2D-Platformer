@@ -6,17 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/FaceTrackerExample/FaceTrackerExample.unity
-    guid: e5d0c664715582e4ca34e57c9c810679
+    path: Assets/Scenes/Start Screen.unity
+    guid: 33161a28bd7353442b6d6b83025a1521
   - enabled: 1
-    path: Assets/FaceTrackerExample/ShowLicense.unity
-    guid: bffcb2baf6cb09f4c91f5a11a618b29b
-  - enabled: 1
-    path: Assets/FaceTrackerExample/Texture2DFaceTrackerExample/Texture2DFaceTrackerExample.unity
-    guid: 52f3044f03b445d40b792ea9adc8d3d9
-  - enabled: 1
-    path: Assets/FaceTrackerExample/WebCamTextureFaceTrackerExample/WebCamTextureFaceTrackerExample.unity
-    guid: 2f907fe501981c742b2199b6b1866926
-  - enabled: 1
-    path: Assets/FaceTrackerExample/FaceTrackerARExample/FaceTrackerARExample.unity
-    guid: eaf7da6239b583544af465568e1feb95
+    path: Assets/Scenes/Level.unity
+    guid: 32910b8779a658f4784f7a1501e80e3e
+  m_configObjects: {}

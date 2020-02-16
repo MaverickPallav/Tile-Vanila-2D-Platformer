@@ -6,7 +6,7 @@ public class AnimationController : MonoBehaviour
 {
     
     PlayerMovement Movements;
-    // Start is called before the first frame update
+   
     void Start()
     {
         Movements = GetComponent<PlayerMovement>();
@@ -33,4 +33,5 @@ public class AnimationController : MonoBehaviour
         GetComponent<Animator>().SetFloat("ClimbSpeed", 0);
     }
 
+    
 }

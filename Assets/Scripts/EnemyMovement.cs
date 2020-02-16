@@ -5,9 +5,14 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
-    [SerializeField] float movementspeed = 1f;
+    [Header("EnemyMovement")]
+    public float movementspeed = 1f;
+
+    [Header("CacheReferences")]
     Rigidbody2D EnemyRigidbody;
     BoxCollider2D DetectionCollider;
+
+    [Header("BoolCache")]
     bool EnemyMoving = true;
 
     // Start is called before the first frame update
@@ -38,9 +43,8 @@ public class EnemyMovement : MonoBehaviour
     {
         transform.localScale = new Vector2(-(Mathf.Sign(EnemyRigidbody.velocity.x)), 1f);
     }
-    
 
-    
+ 
 
     /* IEnumerator MovingEnemy()    // Enemy Moving Ai With Coroutine
      {

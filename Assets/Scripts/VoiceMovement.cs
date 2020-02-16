@@ -4,14 +4,20 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.Windows.Speech;
 using System;
+using UnityEngine.UI;
 
 public class VoiceMovement : MonoBehaviour
 {
+    [Header("SpeechEssentials")]
     private KeywordRecognizer keywordRecognizer;
     private Dictionary<string, Action> actions = new Dictionary<string, Action>();
 
+    [Header("PlayerMovement")]
     public float movementspeed;
     public float jumpforce;
+    float GravityatStart;
+
+    [Header("BoolCache")]
     bool movementright = false;
     bool movementleft = false;
     bool movementjump = false;
@@ -20,15 +26,21 @@ public class VoiceMovement : MonoBehaviour
     bool playerShoot = false;
     bool playerStop = false;
 
+    [Header("Cached References")]
+    VoiceToText voicetotext;
     Rigidbody2D rb;
     Collider2D mycollider;
     AnimationController anim;
     
     private void Awake()
     {
+        voicetotext = FindObjectOfType<VoiceToText>();
         rb = GetComponent<Rigidbody2D>();
         mycollider = GetComponent<Collider2D>();
         anim = GetComponent<AnimationController>();
+        GravityatStart = rb.gravityScale;
+        gameObject.transform.localScale = new Vector2(1, 1);
+        StartCoroutine(DisbleInstuctionsLabel());
     }
 
     private void Start()
@@ -142,41 +154,51 @@ public class VoiceMovement : MonoBehaviour
         playerStop = true;
     }
 
+    IEnumerator DisbleInstuctionsLabel()
+    {
+        yield return new WaitForSeconds(5f);
+        FindObjectOfType<GameSession>().DisableInstructionsLabel();
+    }
+
     private void Update()
     {
         FlippingPlayer();
-        if (movementright)
+        if (movementright) //Right Moving Functionality
         {
+            FindObjectOfType<GameSession>().DisableInstructionsLabel();
+            voicetotext.RightMovementRecognised();
             Vector2 playervelocity = new Vector2( movementspeed, rb.velocity.y);
             rb.velocity = playervelocity;
         }
 
-       if(movementleft)
+       if(movementleft) //Left Moving Functionality
         {
+            FindObjectOfType<GameSession>().DisableInstructionsLabel();
+            voicetotext.LeftMovementRecognised();
             Vector2 playervelocity = new Vector2(-movementspeed, rb.velocity.y);
             rb.velocity = playervelocity;
         }
        
-       if(playerShoot)
+       if(playerShoot) //Player Shooting Functionality
         {
+            voicetotext.ShootRecognised();
             Debug.Log("Shot");
         }
 
-       if(playerStop)
+       if(playerStop) //Player Stoping Functionality
         {
+            voicetotext.StopRecognised();
             Vector2 playervelocity = new Vector2(0, 0);
             rb.velocity = playervelocity;
         }
 
-       if(movementjump)
+       if(movementjump) //Player Jump Functionality
         {
             if (mycollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
             {
-
-                    Vector2 JumpvelocitytoAdd = new Vector2(rb.velocity.x, jumpforce);
+                    voicetotext.JumpRecognised();
+                    Vector2 JumpvelocitytoAdd = new Vector2(0f, jumpforce);
                     rb.velocity += JumpvelocitytoAdd;
-                    // rb.gravityScale = 10;
-                
             }
             else
             {
@@ -184,18 +206,26 @@ public class VoiceMovement : MonoBehaviour
             }
         }
         
-       
+       if(movementup) //Player Climbing Up Facility
+        {
+            voicetotext.ClimbingUpRecognised();
+        }
+
+       if(movementdown) //Player Climbing Down Faciltiy
+        {
+            voicetotext.ClimbingDownRecognised();
+        }
 
     }
 
-    private void FlippingPlayer()
+    private void FlippingPlayer() //Player Flipping Functionality
     {
         bool PlayerhasHorizontalmovement = Mathf.Abs(rb.velocity.x) > Mathf.Epsilon;
 
         if (PlayerhasHorizontalmovement)
         {
 
-            transform.localScale = new Vector2(Mathf.Sign(-rb.velocity.x), 1);
+            transform.localScale = new Vector2(Mathf.Sign(rb.velocity.x), 1);
             anim.StartMoving(Mathf.Abs(rb.velocity.x));
         }
         else

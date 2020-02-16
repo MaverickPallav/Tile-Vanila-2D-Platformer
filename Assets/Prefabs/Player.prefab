@@ -127,7 +127,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -242990125
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: 1857188551261513057, guid: 615afc8225a116a46a05c676881c1fbf,
     type: 3}
@@ -180,8 +180,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.12340307, y: 0.051783442}
-  m_Size: {x: 0.7306776, y: 0.9527557}
+  m_Offset: {x: -0.116943836, y: 0.051783442}
+  m_Size: {x: 0.6057997, y: 0.9527557}
   m_Direction: 0
 --- !u!114 &1900182268
 MonoBehaviour:
@@ -209,6 +209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fb5395600639b64186a88de26d96203, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpforce: 20
+  jumpforce: 25
   movementspeed: 5
   Climbspeed: 5
+  deathkick: {x: 0, y: 20}
