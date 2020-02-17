@@ -73,4 +73,13 @@ public class VoiceToText : MonoBehaviour
         voiceToText.text = "Jump";
     }
 
+    public void VoiceScriptEnabled()
+    {
+        voiceToText.text = "VoiceEnabled";
+    }
+
+    public void KeyboardEnabled()
+    {
+        voiceToText.text = "KeyboardEnabled";
+    }
 }

@@ -22,7 +22,7 @@ TagManager:
   - Background
   - Hazards
   - Interactables
-  - 
+  - Lava
   - 
   - 
   - 
@@ -49,6 +49,9 @@ TagManager:
     locked: 0
   - name: Walls
     uniqueID: 3278594893
+    locked: 0
+  - name: Lava
+    uniqueID: 3550254355
     locked: 0
   - name: Ground
     uniqueID: 823662007

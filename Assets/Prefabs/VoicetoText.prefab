@@ -58,7 +58,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!114 &5807215760641520251
 MonoBehaviour:
@@ -132,10 +132,10 @@ RectTransform:
   m_Father: {fileID: 5807215760641520253}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 567.5, y: -483.6}
-  m_SizeDelta: {x: -1194.4, y: -991.6}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -394, y: -495.8}
+  m_SizeDelta: {x: 725.6, y: 88.400024}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5807215760874389369
 CanvasRenderer:
@@ -165,7 +165,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 80
+    m_FontSize: 60
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 0

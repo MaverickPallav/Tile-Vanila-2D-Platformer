@@ -16,6 +16,8 @@ public class VoiceMovement : MonoBehaviour
     public float movementspeed;
     public float jumpforce;
     float GravityatStart;
+    public float Climbspeed;
+    public Vector2 deathkick = new Vector2(10f, 25f);
 
     [Header("BoolCache")]
     bool movementright = false;
@@ -25,18 +27,27 @@ public class VoiceMovement : MonoBehaviour
     bool movementdown = false;
     bool playerShoot = false;
     bool playerStop = false;
+    bool isAlive = true;
 
     [Header("Cached References")]
     VoiceToText voicetotext;
     Rigidbody2D rb;
-    Collider2D mycollider;
+    BoxCollider2D PlayerLegsCollider;
+    CapsuleCollider2D PlayerBodyCollider;
     AnimationController anim;
-    
+    AudioSource audiosrc;
+
+    [Header("PlayerAudio")]
+    public AudioClip jumpaudio;
+    public AudioClip deathaudio;
+
     private void Awake()
     {
+        audiosrc = GetComponent<AudioSource>();
         voicetotext = FindObjectOfType<VoiceToText>();
         rb = GetComponent<Rigidbody2D>();
-        mycollider = GetComponent<Collider2D>();
+        PlayerLegsCollider = GetComponent<BoxCollider2D>();
+        PlayerBodyCollider = GetComponent<CapsuleCollider2D>();
         anim = GetComponent<AnimationController>();
         GravityatStart = rb.gravityScale;
         gameObject.transform.localScale = new Vector2(1, 1);
@@ -158,64 +169,103 @@ public class VoiceMovement : MonoBehaviour
     {
         yield return new WaitForSeconds(5f);
         FindObjectOfType<GameSession>().DisableInstructionsLabel();
+        FindObjectOfType<GameSession>().ShowScoreLabel();
     }
 
     private void Update()
     {
+        PlayerDeath();
         FlippingPlayer();
-        if (movementright) //Right Moving Functionality
+        if (isAlive)
         {
-            FindObjectOfType<GameSession>().DisableInstructionsLabel();
-            voicetotext.RightMovementRecognised();
-            Vector2 playervelocity = new Vector2( movementspeed, rb.velocity.y);
-            rb.velocity = playervelocity;
-        }
-
-       if(movementleft) //Left Moving Functionality
-        {
-            FindObjectOfType<GameSession>().DisableInstructionsLabel();
-            voicetotext.LeftMovementRecognised();
-            Vector2 playervelocity = new Vector2(-movementspeed, rb.velocity.y);
-            rb.velocity = playervelocity;
-        }
-       
-       if(playerShoot) //Player Shooting Functionality
-        {
-            voicetotext.ShootRecognised();
-            Debug.Log("Shot");
-        }
-
-       if(playerStop) //Player Stoping Functionality
-        {
-            voicetotext.StopRecognised();
-            Vector2 playervelocity = new Vector2(0, 0);
-            rb.velocity = playervelocity;
-        }
-
-       if(movementjump) //Player Jump Functionality
-        {
-            if (mycollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
+            if (movementright) //Right Moving Functionality
             {
+                FindObjectOfType<GameSession>().DisableInstructionsLabel();
+                FindObjectOfType<GameSession>().ShowScoreLabel();
+                voicetotext.RightMovementRecognised();
+                Vector2 playervelocity = new Vector2(movementspeed, rb.velocity.y);
+                rb.velocity = playervelocity;
+            }
+
+            if (movementleft) //Left Moving Functionality
+            {
+                FindObjectOfType<GameSession>().DisableInstructionsLabel();
+                FindObjectOfType<GameSession>().ShowScoreLabel();
+                voicetotext.LeftMovementRecognised();
+                Vector2 playervelocity = new Vector2(-movementspeed, rb.velocity.y);
+                rb.velocity = playervelocity;
+            }
+
+            if (playerShoot) //Player Shooting Functionality
+            {
+                voicetotext.ShootRecognised();
+                Debug.Log("Shot");
+            }
+
+            if (playerStop) //Player Stoping Functionality
+            {
+                voicetotext.StopRecognised();
+                Vector2 playervelocity = new Vector2(0, 0);
+                rb.velocity = playervelocity;
+            }
+
+            if (movementjump) //Player Jump Functionality
+            {
+                if (PlayerLegsCollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
+                {
+                    AudioSource.PlayClipAtPoint(jumpaudio, Camera.main.transform.position, 0.4f);
                     voicetotext.JumpRecognised();
                     Vector2 JumpvelocitytoAdd = new Vector2(0f, jumpforce);
                     rb.velocity += JumpvelocitytoAdd;
+                }
+                else
+                {
+                    movementjump = false;
+                }
+            }
+
+            if (PlayerLegsCollider.IsTouchingLayers(LayerMask.GetMask("Climbing"))) //Player ClimbingFunctionality
+            {
+                if (rb.velocity.x == 0)
+                { anim.StopMoving(); }
+
+                if (rb.velocity.y == 0)
+                {
+                    GetComponent<Animator>().SetBool("ClimbIdle", true);
+                }
+                else
+                {
+                    GetComponent<Animator>().SetBool("ClimbIdle", false);
+                }
+
+                if (movementup) //Player Climbing Up Facility
+                {
+                    Vector2 playervelocity = new Vector2(rb.velocity.x, Climbspeed);
+                    anim.StartClimbing(Mathf.Abs(Climbspeed));
+                    rb.velocity = playervelocity;
+                    rb.gravityScale = 0;
+                    voicetotext.ClimbingUpRecognised();
+                }
+
+                if (movementdown) //Player Climbing Down Faciltiy
+                {
+                    Vector2 playervelocity = new Vector2(rb.velocity.x, -Climbspeed);
+                    anim.StartClimbing(Mathf.Abs(Climbspeed));
+                    rb.velocity = playervelocity;
+                    rb.gravityScale = 0;
+                    voicetotext.ClimbingDownRecognised();
+                }
             }
             else
             {
-                movementjump = false;
+                
+                GetComponent<Animator>().SetBool("ClimbIdle", false);
+                anim.StopClimbing();
+                rb.gravityScale = GravityatStart;
             }
-        }
-        
-       if(movementup) //Player Climbing Up Facility
-        {
-            voicetotext.ClimbingUpRecognised();
-        }
+             
 
-       if(movementdown) //Player Climbing Down Faciltiy
-        {
-            voicetotext.ClimbingDownRecognised();
         }
-
     }
 
     private void FlippingPlayer() //Player Flipping Functionality
@@ -234,5 +284,28 @@ public class VoiceMovement : MonoBehaviour
         }
     }
 
+    private void PlayerDeath()
+    {
+
+        if (PlayerBodyCollider.IsTouchingLayers(LayerMask.GetMask("Enemy"))
+            || PlayerBodyCollider.IsTouchingLayers(LayerMask.GetMask("Hazards"))
+            || PlayerBodyCollider.IsTouchingLayers(LayerMask.GetMask("Lava")))
+        {
+            StartCoroutine(MainAudio());
+            FindObjectOfType<GameSession>().OnPlayerDeath();
+            isAlive = false;
+            GetComponent<Animator>().SetTrigger("Die");
+            GetComponent<Rigidbody2D>().velocity = deathkick;
+            Destroy(this.gameObject, 2f);
+        }
+    }
+
+    IEnumerator MainAudio()
+    {
+        audiosrc.volume = 0.02f;
+        AudioSource.PlayClipAtPoint(deathaudio, Camera.main.transform.position, 0.4f);
+        yield return new WaitForSeconds(10f);
+        audiosrc.Stop();
+    }
 
 }

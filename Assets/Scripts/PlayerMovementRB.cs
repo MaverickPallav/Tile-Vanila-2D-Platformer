@@ -7,9 +7,10 @@ public class PlayerMovementRB : MonoBehaviour
 {
     [Header("CacheReferences")]
     Rigidbody2D rb;
-    CapsuleCollider2D PlayerBodyCollider;
+    [HideInInspector] public CapsuleCollider2D PlayerBodyCollider;
     BoxCollider2D PlayerLegsCollider;
     AnimationController anim;
+    AudioSource audiosrc;
 
     [Header("PlayerMovement")]
     public float jumpforce;
@@ -20,17 +21,22 @@ public class PlayerMovementRB : MonoBehaviour
 
     [Header("BoolCache")]
     bool isAlive = true;
-  
+
+    [Header("PlayerAudio")]
+    public AudioClip jumpaudio;
+    public AudioClip deathaudio;
     //private float offsetpos = 0.04f;
 
     private void Awake()
     {
+        audiosrc = GetComponent<AudioSource>();
         rb = gameObject.GetComponent<Rigidbody2D>();
         anim = GetComponent<AnimationController>();
         PlayerBodyCollider = GetComponent<CapsuleCollider2D>();
         PlayerLegsCollider = GetComponent<BoxCollider2D>();
         GetComponent<Animator>().SetBool("ClimbIdle", false);
         GravityatStart = rb.gravityScale;
+        StartCoroutine(DisbleInstuctionsLabel());
     }
 
     // Update is called once per frame
@@ -47,12 +53,15 @@ public class PlayerMovementRB : MonoBehaviour
         else
         {
             return;
-        }
-
-       
-      
+        }   
     }
 
+    IEnumerator DisbleInstuctionsLabel()
+    {
+        yield return new WaitForSeconds(5f);
+        FindObjectOfType<GameSession>().DisableInstructionsLabel();
+        FindObjectOfType<GameSession>().ShowScoreLabel();
+    }
     private void ClimbingLadder()
     {
         if(PlayerLegsCollider.IsTouchingLayers(LayerMask.GetMask("Climbing")))
@@ -75,7 +84,7 @@ public class PlayerMovementRB : MonoBehaviour
                 GetComponent<Animator>().SetBool("ClimbIdle", false);
             }
 
-            
+            // Need to Work on this piece of Code to improve player climbing Movement in Future
            /* if (rb.velocity.y == 0 && mycollider.IsTouchingLayers(LayerMask.GetMask("Ladder")) && mycollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
             {
                 this.gameObject.GetComponent<Transform>().position =
@@ -93,11 +102,12 @@ public class PlayerMovementRB : MonoBehaviour
         }
         else
         {
-            GetComponent<Animator>().SetBool("LadderPresent", false);           
-           /* if (rb.velocity.y == 0 && mycollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
-            {
-                GetComponent<Animator>().SetBool("ClimbIdle", false);
-            } */
+            GetComponent<Animator>().SetBool("LadderPresent", false);
+            // Need to Work on this piece of Code to improve player climbing Movement in Future
+            /* if (rb.velocity.y == 0 && mycollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
+             {
+                 GetComponent<Animator>().SetBool("ClimbIdle", false);
+             } */
             GetComponent<Animator>().SetBool("ClimbIdle", false);
             anim.StopClimbing();
             rb.gravityScale = GravityatStart;
@@ -112,6 +122,7 @@ public class PlayerMovementRB : MonoBehaviour
             
             if (Input.GetKeyDown(KeyCode.Space))
             {
+                AudioSource.PlayClipAtPoint(jumpaudio, Camera.main.transform.position, 0.4f);
                 Vector2 JumpvelocitytoAdd = new Vector2(0f, jumpforce);
                 rb.velocity += JumpvelocitytoAdd;
                 // rb.gravityScale = 50;
@@ -121,7 +132,14 @@ public class PlayerMovementRB : MonoBehaviour
 
     private void Run()
     {
+        
+       
         float horizontal = Input.GetAxis("Horizontal"); // this value lies between -1 to +1
+        if(horizontal != 0)
+        {
+            FindObjectOfType<GameSession>().DisableInstructionsLabel();
+            FindObjectOfType<GameSession>().ShowScoreLabel();
+        }
         
         Vector2 playervelocity = new Vector2(horizontal*movementspeed, rb.velocity.y);
         rb.velocity = playervelocity;
@@ -146,14 +164,26 @@ public class PlayerMovementRB : MonoBehaviour
     private void PlayerDeath()
     {
 
-        if (PlayerBodyCollider.IsTouchingLayers(LayerMask.GetMask("Enemy")) || PlayerBodyCollider.IsTouchingLayers(LayerMask.GetMask("Hazards")))
+        if (PlayerBodyCollider.IsTouchingLayers(LayerMask.GetMask("Enemy")) 
+            || PlayerBodyCollider.IsTouchingLayers(LayerMask.GetMask("Hazards")) 
+            || PlayerBodyCollider.IsTouchingLayers(LayerMask.GetMask("Lava")))
         {
+
+            StartCoroutine(MainAudio());
             FindObjectOfType<GameSession>().OnPlayerDeath();
             isAlive = false;
             GetComponent<Animator>().SetTrigger("Die");
             GetComponent<Rigidbody2D>().velocity = deathkick;
+           // FindObjectOfType<GameSession>().ProcessPlayerDeath();
             Destroy(this.gameObject, 2f);
         }
     }
  
+    IEnumerator MainAudio()
+    {
+        audiosrc.volume = 0.02f;
+        AudioSource.PlayClipAtPoint(deathaudio, Camera.main.transform.position, 0.4f);
+        yield return new WaitForSeconds(10f);
+        audiosrc.Stop();
+    }
 }

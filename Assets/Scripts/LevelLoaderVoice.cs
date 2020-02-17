@@ -21,6 +21,8 @@ public class LevelLoaderVoice : MonoBehaviour
     [Header("CachedReferences")]
     VoiceToText voicetotext;
 
+    public AudioClip ClickSound;
+
     private void Start()
     {
         voicetotext = FindObjectOfType<VoiceToText>();
@@ -66,18 +68,21 @@ public class LevelLoaderVoice : MonoBehaviour
     {
         if (SpeechStart)
         {
+            AudioSource.PlayClipAtPoint(ClickSound, Camera.main.transform.position, 0.4f);
             voicetotext.StartRecognised();
             StartCoroutine(StartDetected());    
         }
 
         if (SpeechMenu)
         {
+            AudioSource.PlayClipAtPoint(ClickSound, Camera.main.transform.position, 0.4f);
             voicetotext.MenuRecognised();
             StartCoroutine(MenuDetected());       
         }
 
         if(SpeechQuit)
         {
+            AudioSource.PlayClipAtPoint(ClickSound, Camera.main.transform.position, 0.4f);
             voicetotext.QuitRecognised();
             Application.Quit();
         }
@@ -85,14 +90,14 @@ public class LevelLoaderVoice : MonoBehaviour
 
     IEnumerator StartDetected()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(3f);
         SceneManager.LoadScene("Level");
     }
 
     IEnumerator MenuDetected()
     {
-        yield return new WaitForSeconds(2f);
-        SceneManager.LoadScene("StartScreen");
+        yield return new WaitForSeconds(3f);
+        SceneManager.LoadScene("Start Screen");
     }
 
     
